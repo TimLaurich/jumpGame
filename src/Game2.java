@@ -6,10 +6,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-public class Game extends JPanel implements KeyListener, ActionListener {
+public class Game2 extends JPanel implements KeyListener, ActionListener {
     private static final int width = 800;
     private static final int height = 600;
-    private static final int spaceObstacles = 200;
+    private static final int spaceObstacles = 150;  // Menší vzdálenost mezi překážkami
 
     private Player player;
     private ArrayList<Obstacle> obstacles;
@@ -17,7 +17,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private int score;
     private Timer timer;
 
-    public Game() {
+    public Game2() {
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         addKeyListener(this);
@@ -27,14 +27,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         score = 0;
         gameOver = false;
 
-        timer = new Timer(20, this);
+        timer = new Timer(15, this);  // Rychlejší časovač
         timer.start();
 
         generateInitialObstacles();
     }
 
     private void generateInitialObstacles() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {  // Více počátečních překážek
             generateObstacle(width + i * spaceObstacles);
         }
     }
@@ -114,9 +114,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             resetGame();
         }
     }
-
     @Override
     public void keyReleased(KeyEvent e) {}
+
 
 
 }
