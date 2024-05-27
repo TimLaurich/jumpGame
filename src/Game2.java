@@ -14,8 +14,10 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     private Player player;
     private ArrayList<Obstacle> obstacles;
     private boolean gameOver;
-    private int score;
     private Timer timer;
+    private Background background;
+    private Effects effects;
+    private ScoreManager scoreManager;
 
     public Game2() {
         setPreferredSize(new Dimension(width, height));
@@ -24,8 +26,10 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
 
         player = new Player();
         obstacles = new ArrayList<>();
-        score = 0;
         gameOver = false;
+        background = new Background();
+        effects = new Effects();
+        scoreManager = new ScoreManager();
 
         timer = new Timer(15, this);  // Rychlejší časovač
         timer.start();
@@ -47,7 +51,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
         player.reset();
         obstacles.clear();
         generateInitialObstacles();
-        score = 0;
+        scoreManager.reset();
         gameOver = false;
         timer.start();
     }
@@ -64,7 +68,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
                 generateObstacle(width + spaceObstacles);
             }
             checkCollision();
-            score++;
+            scoreManager.increment();
             repaint();
         }
     }
@@ -82,6 +86,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        background.draw(g);
 
         g.setColor(Color.RED);
         g.fillRect(player.getX(), player.getY(), 50, 50);
@@ -91,14 +96,10 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
             g.fillRect(obstacle.getBounds().x, obstacle.getBounds().y, obstacle.getBounds().width, obstacle.getBounds().height);
         }
 
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Score: " + score, 10, 30);
+        effects.drawScore(g, scoreManager.getScore());
 
         if (gameOver) {
-            g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("Game Over!", width / 2 - 100, height / 2);
-            g.drawString("Press 'R' to Restart", width / 2 - 150, height / 2 + 50);
+            effects.drawGameOver(g, width, height);
         }
     }
 
@@ -114,9 +115,11 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
             resetGame();
         }
     }
-    @Override
-    public void keyReleased(KeyEvent e) {}
 
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 
 
 }
