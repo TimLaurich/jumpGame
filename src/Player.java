@@ -1,6 +1,6 @@
-import java.awt.Rectangle;
+import java.awt.*;
 
-public class Player {
+class Player {
     private static final int characterWidth = 50;
     private static final int characterHeight = 50;
     private static final int startX = 100;
@@ -10,17 +10,19 @@ public class Player {
 
     private int x, y, velocityY;
     private boolean jumping;
+    private int jumpPowerMultiplier;
 
     public Player() {
         x = startX;
         y = startY;
         velocityY = 0;
         jumping = false;
+        jumpPowerMultiplier = 1;
     }
 
     public void update() {
         if (jumping) {
-            velocityY = jumpPower;
+            velocityY = jumpPower * jumpPowerMultiplier;
             jumping = false;
         } else {
             velocityY += gravity;
@@ -44,6 +46,7 @@ public class Player {
         y = startY;
         velocityY = 0;
         jumping = false;
+        jumpPowerMultiplier = 1;
     }
 
     public int getX() {
@@ -56,5 +59,9 @@ public class Player {
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, characterWidth, characterHeight);
+    }
+
+    public void increaseJumpPower() {
+        jumpPowerMultiplier += 1;
     }
 }

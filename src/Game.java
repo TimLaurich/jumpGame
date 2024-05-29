@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Game extends JPanel implements KeyListener, ActionListener {
     private static final int width = 800;
@@ -13,6 +14,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private Player player;
     private ArrayList<Obstacle> obstacles;
+    private ArrayList<PowerUp> powerUps;
     private boolean gameOver;
     private Timer timer;
     private Background background;
@@ -26,6 +28,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         player = new Player();
         obstacles = new ArrayList<>();
+        powerUps = new ArrayList<>();
         gameOver = false;
         background = new Background();
         effects = new Effects();
@@ -35,6 +38,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         timer.start();
 
         generateInitialObstacles();
+        generateInitialPowerUps();
     }
 
     private void generateInitialObstacles() {
@@ -43,14 +47,26 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    private void generateInitialPowerUps() {
+        for (int i = 0; i < 2; i++) {
+            generatePowerUp(width + i * spaceObstacles);
+        }
+    }
+
     private void generateObstacle(int startX) {
         obstacles.add(new Obstacle(startX));
+    }
+
+    private void generatePowerUp(int startX) {
+        powerUps.add(new PowerUp(startX));
     }
 
     private void resetGame() {
         player.reset();
         obstacles.clear();
+        powerUps.clear();
         generateInitialObstacles();
+        generateInitialPowerUps();
         scoreManager.reset();
         gameOver = false;
         timer.start();
@@ -63,9 +79,16 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             for (Obstacle obstacle : obstacles) {
                 obstacle.update();
             }
+            for (PowerUp powerUp : powerUps) {
+                powerUp.update();
+            }
             if (obstacles.get(0).isOffScreen()) {
                 obstacles.remove(0);
                 generateObstacle(width + spaceObstacles);
+            }
+            if (powerUps.get(0).isOffScreen()) {
+                powerUps.remove(0);
+                generatePowerUp(width + spaceObstacles);
             }
             checkCollision();
             scoreManager.increment();
@@ -79,6 +102,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             if (obstacle.getBounds().intersects(playerBounds)) {
                 gameOver = true;
                 timer.stop();
+            }
+        }
+        for (PowerUp powerUp : powerUps) {
+            if (powerUp.getBounds().intersects(playerBounds)) {
+                player.increaseJumpPower();
+                powerUps.remove(powerUp);
             }
         }
     }
@@ -96,6 +125,11 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             g.fillRect(obstacle.getBounds().x, obstacle.getBounds().y, obstacle.getBounds().width, obstacle.getBounds().height);
         }
 
+        g.setColor(Color.BLUE);
+        for (PowerUp powerUp : powerUps) {
+            g.fillRect(powerUp.getBounds().x, powerUp.getBounds().y, powerUp.getBounds().width, powerUp.getBounds().height);
+        }
+
         effects.drawScore(g, scoreManager.getScore());
 
         if (gameOver) {
@@ -108,7 +142,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !gameOver) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE &&!gameOver) {
             player.jump();
         }
         if (e.getKeyCode() == KeyEvent.VK_R && gameOver) {
