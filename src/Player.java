@@ -1,4 +1,8 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 class Player {
     private static final int characterWidth = 50;
@@ -11,6 +15,7 @@ class Player {
     private int x, y, velocityY;
     private boolean jumping;
     private int jumpPowerMultiplier;
+    private BufferedImage playerImage;
 
     public Player() {
         x = startX;
@@ -18,6 +23,12 @@ class Player {
         velocityY = 0;
         jumping = false;
         jumpPowerMultiplier = 1;
+
+        try {
+            playerImage = ImageIO.read(new File("player.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void update() {
@@ -63,5 +74,17 @@ class Player {
 
     public void increaseJumpPower() {
         jumpPowerMultiplier += 1;
+    }
+
+    public BufferedImage getImage() {
+        return playerImage;
+    }
+
+    public int getCharacterWidth() {
+        return characterWidth;
+    }
+
+    public int getCharacterHeight() {
+        return characterHeight;
     }
 }

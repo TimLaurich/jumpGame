@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Game2 extends JPanel implements KeyListener, ActionListener {
     private static final int width = 800;
     private static final int height = 600;
-    private static final int spaceObstacles = 150;  // Menší vzdálenost mezi překážkami
+    private static final int spaceObstacles = 150;
 
     private Player player;
     private ArrayList<Obstacle> obstacles;

@@ -16,10 +16,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private ArrayList<Obstacle> obstacles;
     private ArrayList<PowerUp> powerUps;
     private boolean gameOver;
+    private boolean paused;
     private Timer timer;
     private Background background;
     private Effects effects;
     private ScoreManager scoreManager;
+
 
     public Game() {
         setPreferredSize(new Dimension(width, height));
@@ -30,9 +32,11 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         obstacles = new ArrayList<>();
         powerUps = new ArrayList<>();
         gameOver = false;
+        paused = false;
         background = new Background();
         effects = new Effects();
         scoreManager = new ScoreManager();
+
 
         timer = new Timer(20, this);
         timer.start();
@@ -69,12 +73,13 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         generateInitialPowerUps();
         scoreManager.reset();
         gameOver = false;
+        paused = false;
         timer.start();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!gameOver) {
+        if (!gameOver && !paused) {
             player.update();
             for (Obstacle obstacle : obstacles) {
                 obstacle.update();
@@ -107,6 +112,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         for (PowerUp powerUp : powerUps) {
             if (powerUp.getBounds().intersects(playerBounds)) {
                 player.increaseJumpPower();
+
                 powerUps.remove(powerUp);
             }
         }
@@ -117,8 +123,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         super.paintComponent(g);
         background.draw(g);
 
-        g.setColor(Color.RED);
-        g.fillRect(player.getX(), player.getY(), 50, 50);
+
+        g.drawImage(player.getImage(), player.getX(), player.getY(), player.getCharacterWidth(), player.getCharacterHeight(), null);
 
         g.setColor(Color.GREEN);
         for (Obstacle obstacle : obstacles) {
@@ -134,22 +140,41 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         if (gameOver) {
             effects.drawGameOver(g, width, height);
+        } else if (paused) {
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("Paused", width / 2 - 100, height / 2);
         }
     }
+
 
     @Override
     public void keyTyped(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE &&!gameOver) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && !gameOver && !paused) {
             player.jump();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_R && gameOver) {
+        } else if (e.getKeyCode() == KeyEvent.VK_P) {
+            paused = !paused;
+        } else if (e.getKeyCode() == KeyEvent.VK_R && gameOver) {
             resetGame();
+        } else if (e.getKeyCode() == KeyEvent.VK_M && gameOver) {
+            returnToMenu();
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {}
+
+    private void returnToMenu() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (topFrame != null) {
+            topFrame.getContentPane().removeAll();
+            GameMenu menu = new GameMenu(topFrame);
+            topFrame.add(menu);
+            topFrame.revalidate();
+            topFrame.repaint();
+        }
+    }
 }

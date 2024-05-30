@@ -2,8 +2,8 @@ import java.awt.Rectangle;
 import java.util.Random;
 
 public class Obstacle {
-    private static final int width = 50;
-    private static final int maxHeight = 50;  // Maximální výška překážky menší než skoková síla
+    private static final int width = 20;
+    private static final int maxHeight = 50;
     private static final int speed = 5;
 
     private int x, y;
@@ -12,7 +12,7 @@ public class Obstacle {
     public Obstacle(int startX) {
         x = startX;
         Random random = new Random();
-        int obstacleHeight = 20 + random.nextInt(maxHeight);  // Nastavení maximální výšky překážky
+        int obstacleHeight = 20 + random.nextInt(maxHeight);
 
         obstacle = new Rectangle(x, 600 - 100 - obstacleHeight, width, obstacleHeight);
     }

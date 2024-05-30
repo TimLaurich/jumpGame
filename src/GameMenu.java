@@ -36,21 +36,20 @@ public class GameMenu extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == easyButton) {
-            frame.getContentPane().removeAll();
-            Game game = new Game();
-            frame.add(game);
-            frame.revalidate();
-            frame.repaint();
-            game.requestFocusInWindow();
+            startGame(new Game());
         } else if (e.getSource() == hardButton) {
-            frame.getContentPane().removeAll();
-            Game2 game2 = new Game2();
-            frame.add(game2);
-            frame.revalidate();
-            frame.repaint();
-            game2.requestFocusInWindow();
+            startGame(new Game2());
         }
     }
+
+    private void startGame(JPanel game) {
+        frame.getContentPane().removeAll();
+        frame.add(game);
+        frame.revalidate();
+        frame.repaint();
+        game.requestFocusInWindow();
+    }
+
 
 
 }

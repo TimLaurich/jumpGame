@@ -9,7 +9,10 @@ public class Effects {
         g.drawString("Game Over!", width / 2 - 100, height / 2);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Press 'R' to Restart", width / 2 - 100, height / 2 + 50);
+        g.drawString("Press 'M' for Main Menu", width / 2 - 100, height / 2 + 80);
     }
+
+
 
     public void drawScore(Graphics g, int score) {
         g.setColor(Color.BLACK);

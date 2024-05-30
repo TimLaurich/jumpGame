@@ -1,15 +1,33 @@
-import java.awt.Graphics;
-import java.awt.Color;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 public class Background {
     private static final int width = 800;
     private static final int height = 600;
+    private BufferedImage backgroundImage;
+    private Rectangle floor;
+
+    public Background() {
+        try {
+            backgroundImage = ImageIO.read(new File("sky.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        int floorHeight = 100;
+        floor = new Rectangle(0, height - floorHeight, width, floorHeight);
+    }
 
     public void draw(Graphics g) {
-        g.setColor(Color.CYAN);
-        g.fillRect(0, 0, width, height);
+
+        g.drawImage(backgroundImage, 0, 0, width, height, null);
+
 
         g.setColor(Color.GREEN);
-        g.fillRect(0, height - 100, width, 100);
+        g.fillRect(floor.x, floor.y, floor.width, floor.height);
     }
 }
