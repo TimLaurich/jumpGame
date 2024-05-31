@@ -7,6 +7,7 @@ public class GameMenu extends JPanel implements ActionListener {
     private JFrame frame;
     private JButton easyButton, hardButton;
 
+
     public GameMenu(JFrame frame) {
         this.frame = frame;
 
@@ -33,6 +34,11 @@ public class GameMenu extends JPanel implements ActionListener {
         add(hardButton, gbc);
     }
 
+    /**
+     * Handles button clicks in the game menu.
+     *
+     * @param e the action event that triggered this method
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == easyButton) {
@@ -42,6 +48,11 @@ public class GameMenu extends JPanel implements ActionListener {
         }
     }
 
+    /**
+     * Starts a new game with the given game panel.
+     *
+     * @param game the game panel to start
+     */
     private void startGame(JPanel game) {
         frame.getContentPane().removeAll();
         frame.add(game);
@@ -49,7 +60,4 @@ public class GameMenu extends JPanel implements ActionListener {
         frame.repaint();
         game.requestFocusInWindow();
     }
-
-
-
 }

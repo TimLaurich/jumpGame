@@ -1,29 +1,49 @@
 import java.awt.*;
 
 public class PowerUp {
-    private static final int width = 20;
-    private static final int height = 20;
-    private static final int speed = 5;
+    private static final int POWER_UP_WIDTH = 20;
+    private static final int POWER_UP_HEIGHT = 20;
+    private static final int POWER_UP_SPEED = 5;
 
-    private int x, y;
-    private Rectangle powerUp;
+    private int xCoordinate;
+    private int yCoordinate;
+    private Rectangle powerUpBounds;
 
+    /**
+     * Initializes the power-up at the specified starting x-coordinate.
+     *
+     * @param startX the starting x-coordinate of the power-up
+     */
     public PowerUp(int startX) {
-        x = startX;
-        y = 600 - 100 - height;
-        powerUp = new Rectangle(x, y, width, height);
+        xCoordinate = startX - 50;
+        yCoordinate = 600 - 100 - POWER_UP_HEIGHT;
+        powerUpBounds = new Rectangle(xCoordinate, yCoordinate, POWER_UP_WIDTH, POWER_UP_HEIGHT);
     }
 
+    /**
+     * Updates the position of the power-up.
+     */
     public void update() {
-        x -= speed;
-        powerUp.setLocation(x, y);
+        xCoordinate -= POWER_UP_SPEED;
+        powerUpBounds.setLocation(xCoordinate, yCoordinate);
     }
 
+    /**
+     * Returns the bounds of the power-up.
+     *
+     * @return the bounds of the power-up
+     */
     public Rectangle getBounds() {
-        return powerUp;
+        return powerUpBounds;
     }
 
+    /**
+     * Checks if the power-up is off-screen.
+     *
+     * @return true if the power-up is off-screen, false otherwise
+     */
     public boolean isOffScreen() {
-        return x + width < 0;
+        return xCoordinate + POWER_UP_WIDTH < 0;
     }
+
 }
