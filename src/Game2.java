@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-
 public class Game2 extends JPanel implements KeyListener, ActionListener {
     private static final int width = 800;
     private static final int height = 600;
@@ -18,7 +17,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
 
     private Player player;
     private ArrayList<Obstacle> obstacles;
-    private ArrayList<PowerUp> powerUps;
+    private PowerUp powerUp;
     private boolean gameOver;
     private boolean paused;
     private Timer timer;
@@ -28,7 +27,6 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
 
     private int highScore;
 
-
     public Game2() {
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
@@ -36,7 +34,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
 
         player = new Player();
         obstacles = new ArrayList<>();
-        powerUps = new ArrayList<>();
+        powerUp = null;
         gameOver = false;
         paused = false;
         background = new Background();
@@ -48,26 +46,25 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
         timer.start();
 
         generateInitialObstacles();
-        generateInitialPowerUps();
+        generateInitialPowerUp();
     }
+
 
     /**
      * Generates the initial obstacles for the game.
      */
-    private void generateInitialObstacles() {
+    public void generateInitialObstacles() {
         for (int i = 0; i < 5; i++) {
             generateObstacle(width + i * spaceObstacles);
         }
     }
 
     /**
-     * Generates the initial power-ups for the game.
+     * Generates the initial power-up for the game.
      */
-    private void generateInitialPowerUps() {
-        for (int i = 0; i < 3; i++) {
-            if (new Random().nextInt(100) < powerUpProbability) {
-                generatePowerUp(width + i * spaceObstacles);
-            }
+    public void generateInitialPowerUp() {
+        if (new Random().nextInt(100) < powerUpProbability) {
+            generatePowerUp(width + spaceObstacles);
         }
     }
 
@@ -76,7 +73,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
      *
      * @param startX the x-coordinate where the obstacle should be generated
      */
-    private void generateObstacle(int startX) {
+    public void generateObstacle(int startX) {
         obstacles.add(new Obstacle(startX));
     }
 
@@ -85,19 +82,19 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
      *
      * @param startX the x-coordinate where the power-up should be generated
      */
-    private void generatePowerUp(int startX) {
-        powerUps.add(new PowerUp(startX));
+    public void generatePowerUp(int startX) {
+        powerUp = new PowerUp(startX);
     }
 
     /**
      * Resets the game to its initial state.
      */
-    private void resetGame() {
+    public void resetGame() {
         player.reset();
         obstacles.clear();
-        powerUps.clear();
+        powerUp = null;
         generateInitialObstacles();
-        generateInitialPowerUps();
+        generateInitialPowerUp();
         scoreManager.reset();
         gameOver = false;
         paused = false;
@@ -111,7 +108,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!gameOver &&!paused) {
+        if (!gameOver && !paused) {
             player.update();
             for (int i = obstacles.size() - 1; i >= 0; i--) {
                 Obstacle obstacle = obstacles.get(i);
@@ -121,11 +118,10 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
                     generateObstacle(width + spaceObstacles);
                 }
             }
-            for (int i = powerUps.size() - 1; i >= 0; i--) {
-                PowerUp powerUp = powerUps.get(i);
+            if (powerUp != null) {
                 powerUp.update();
                 if (powerUp.isOffScreen()) {
-                    powerUps.remove(i);
+                    powerUp = null;
                     generatePowerUp(width + spaceObstacles);
                 }
             }
@@ -136,9 +132,9 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     }
 
     /**
-     * Checks for collisions between the player and obstacles or power-ups.
+     * Checks for collisions between the player and obstacles or the power-up.
      */
-    private void checkCollision() {
+    public void checkCollision() {
         Rectangle playerBounds = player.getBounds();
         Iterator<Obstacle> obstacleIterator = obstacles.iterator();
         while (obstacleIterator.hasNext()) {
@@ -149,13 +145,9 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
                 obstacleIterator.remove();
             }
         }
-        Iterator<PowerUp> powerUpIterator = powerUps.iterator();
-        while (powerUpIterator.hasNext()) {
-            PowerUp powerUp = powerUpIterator.next();
-            if (powerUp.getBounds().intersects(playerBounds)) {
-                player.increaseJumpPower();
-                powerUpIterator.remove();
-            }
+        if (powerUp != null && powerUp.getBounds().intersects(playerBounds)) {
+            player.increaseJumpPower();
+            powerUp = null;
         }
     }
 
@@ -169,7 +161,6 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
         super.paintComponent(g);
         background.draw(g);
 
-        // Draw the player image
         g.drawImage(player.getImage(), player.getX(), player.getY(), player.getCharacterWidth(), player.getCharacterHeight(), null);
 
         g.setColor(Color.GREEN);
@@ -177,13 +168,13 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
             g.fillRect(obstacle.getBounds().x, obstacle.getBounds().y, obstacle.getBounds().width, obstacle.getBounds().height);
         }
 
-        g.setColor(Color.BLUE);
-        for (PowerUp powerUp : powerUps) {
+        if (powerUp != null) {
+            g.setColor(Color.BLUE);
             g.fillRect(powerUp.getBounds().x, powerUp.getBounds().y, powerUp.getBounds().width, powerUp.getBounds().height);
         }
 
         effects.drawScore(g, scoreManager.getScore());
-        effects.drawHighScore(g,highScore);
+        effects.drawHighScore(g, highScore);
 
         if (gameOver) {
             effects.drawGameOver(g, width, height);
@@ -198,7 +189,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     /**
      * Updates the high score if the current score is higher.
      */
-    private void updateHighScore() {
+    public void updateHighScore() {
         if (scoreManager.getScore() > highScore) {
             highScore = scoreManager.getScore();
             saveHighScore();
@@ -208,7 +199,7 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     /**
      * Saves the high score to a file.
      */
-    private void saveHighScore() {
+    public void saveHighScore() {
         try (PrintWriter writer = new PrintWriter("highscoreGame2.txt")) {
             writer.println(highScore);
         } catch (FileNotFoundException e) {
@@ -219,10 +210,10 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     /**
      * Loads the high score from a file.
      */
-    private void loadHighScore() {
+    public void loadHighScore() {
         try (BufferedReader reader = new BufferedReader(new FileReader("highscoreGame2.txt"))) {
             String line = reader.readLine();
-            if (line!= null) {
+            if (line != null) {
                 highScore = Integer.parseInt(line);
             }
         } catch (IOException e) {
@@ -231,14 +222,15 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE &&!gameOver &&!paused) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && !gameOver && !paused) {
             player.jump();
         } else if (e.getKeyCode() == KeyEvent.VK_P) {
-            paused =!paused;
+            paused = !paused;
         } else if (e.getKeyCode() == KeyEvent.VK_R && gameOver) {
             resetGame();
         } else if (e.getKeyCode() == KeyEvent.VK_M && gameOver) {
@@ -247,14 +239,15 @@ public class Game2 extends JPanel implements KeyListener, ActionListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     /**
      * Returns to the main menu when the 'M' key is pressed.
      */
-    private void returnToMenu() {
+    public void returnToMenu() {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        if (topFrame!= null) {
+        if (topFrame != null) {
             topFrame.getContentPane().removeAll();
             GameMenu menu = new GameMenu(topFrame);
             topFrame.add(menu);

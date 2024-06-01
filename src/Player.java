@@ -18,6 +18,45 @@ public class Player {
     private int jumpPowerMultiplier;
     private BufferedImage playerImage;
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getVelocityY() {
+        return velocityY;
+    }
+
+    public void setVelocityY(int velocityY) {
+        this.velocityY = velocityY;
+    }
+
+    public boolean isJumping() {
+        return jumping;
+    }
+
+    public void setJumping(boolean jumping) {
+        this.jumping = jumping;
+    }
+
+    public int getJumpPowerMultiplier() {
+        return jumpPowerMultiplier;
+    }
+
+    public void setJumpPowerMultiplier(int jumpPowerMultiplier) {
+        this.jumpPowerMultiplier = jumpPowerMultiplier;
+    }
+
+    public BufferedImage getPlayerImage() {
+        return playerImage;
+    }
+
+    public void setPlayerImage(BufferedImage playerImage) {
+        this.playerImage = playerImage;
+    }
 
     public Player() {
         x = startX;
